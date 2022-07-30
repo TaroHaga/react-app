@@ -3,6 +3,7 @@ import axios from "axios";
 import weatherJson from "../static/weather.json";
 
 export const BookCreate = () => {
+  const [loading, setLoading] = useState(true);
   const [books, setBooks] = useState([]);
   const [book, setBook] = useState("");
   const [geoLocation, setGeoLocation] = useState(null);
@@ -34,6 +35,7 @@ export const BookCreate = () => {
   );
   console.log(weatherData.data);
   setWeather(weatherJson[weatherData.data.daily.weathercode[0]]);
+  setLoading(false);
 };
 
 
@@ -45,6 +47,10 @@ export const BookCreate = () => {
     navigator.geolocation.getCurrentPosition(success, fail);
   }, []);
 
+  if (loading) {
+    return <p>now loading...</p>;
+  }
+  
   return (
     <>
       <table>
