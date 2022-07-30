@@ -22,6 +22,7 @@ const App = () => {
       <Routes>
         <Route path="/omikuji" element={<Omikuji />} />
         <Route path="/janken" element={<Janken />} />
+        <Route path="/book-create" element={<BookCreate />} />
       </Routes>
     </BrowserRouter>
   );
