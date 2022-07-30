@@ -1,11 +1,11 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 export const BookCreate = () => {
   const [books, setBooks] = useState([]);
-
   const [book, setBook] = useState("");
+  const [geoLocation, setGeoLocation] = useState(null);
+  const [place, setPlace] = useState("");
 
   const getBooks = async (keyword) => {
     const url = "https://www.googleapis.com/books/v1/volumes?q=intitle:";
@@ -18,16 +18,40 @@ export const BookCreate = () => {
     setBook(book.volumeInfo.title);
   };
 
+  const success = async (position) => {
+    const { latitude, longitude } = position.coords;
+    setGeoLocation({ latitude, longitude });
+    const placeData = await axios.get(
+      `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+    );
+    console.log(placeData.data);
+    setPlace(placeData.data.display_name);
+  };
+
+
+
+
+  const fail = (error) => console.log(error);
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(success, fail);
+  }, []);
+
   return (
     <>
       <table>
         <tbody>
           <tr>
+            <td>場所</td>
+            <td>{place}</td>
+          </tr>
+          <tr>
             <td>読んだ本</td>
             <td>{book}</td>
           </tr>
         </tbody>
-      </table><p>キーワードで検索する</p>
+      </table>
+      <p>キーワードで検索する</p>
       <input type="text" onChange={(e) => getBooks(e.target.value)} />
       <table>
         <thead>
@@ -43,9 +67,9 @@ export const BookCreate = () => {
           {books.map((x, i) => (
             <tr key={i}>
               <td>
-              <button type="button" onClick={() => selectBook(x)}>
-              選択
-                </button>                
+                <button type="button" onClick={() => selectBook(x)}>
+                  選択
+                </button>
               </td>
               <td>{x.volumeInfo.title}</td>
               <td>{x.volumeInfo.publisher}</td>
