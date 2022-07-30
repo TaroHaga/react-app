@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import weatherJson from "../static/weather.json";
 
 export const BookCreate = () => {
   const [books, setBooks] = useState([]);
   const [book, setBook] = useState("");
   const [geoLocation, setGeoLocation] = useState(null);
   const [place, setPlace] = useState("");
+  const [weather, setWeather] = useState("");
 
   const getBooks = async (keyword) => {
     const url = "https://www.googleapis.com/books/v1/volumes?q=intitle:";
@@ -26,7 +28,13 @@ export const BookCreate = () => {
     );
     console.log(placeData.data);
     setPlace(placeData.data.display_name);
-  };
+
+  const weatherData = await axios.get(
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,sunrise,sunset&timezone=Asia%2FTokyo`
+  );
+  console.log(weatherData.data);
+  setWeather(weatherJson[weatherData.data.daily.weathercode[0]]);
+};
 
 
 
@@ -44,6 +52,10 @@ export const BookCreate = () => {
           <tr>
             <td>場所</td>
             <td>{place}</td>
+          </tr>
+          <tr>
+            <td>天気</td>
+            <td>{weather}</td>
           </tr>
           <tr>
             <td>読んだ本</td>
